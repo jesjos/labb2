@@ -1,10 +1,27 @@
-class FotbollsLag {
+/**
+ * Class FotbollsLag keeps track of a football team - its losses, wins, goals for, goals against, points.
+ *
+ * It implements the interface Comparable to enable lists of teams to be automatically sorted
+ *
+ * @author  Jesper Josefsson & Linus Oleander
+ * @version 2010-09-16
+ */
+
+class FotbollsLag implements Comparable<FotbollsLag> {
   
+  // For the purposes of printing - length of name restricted to 15 characters.
   private String name;
   private int playedMatches, wins, losses, draws, goalsFor, goalsAgainst;
   
   public FotbollsLag(String theName) {
-    name = theName;
+    
+    // Name length restricted to 15
+    if (theName.length() > 15) {
+      name = theName.substring(0,15);
+    }
+    else {
+      name = theName;
+    }
     playedMatches = 0;
     wins = 0;
     losses = 0;
@@ -13,7 +30,14 @@ class FotbollsLag {
     goalsAgainst = 0;
   }
   
+  /**
+   *  Registers a match, adding goals to table and calculating match outcome.
+   *  @param gjordaMål      number of goals scored
+   *  @param insläpptaMål   number of goals opponent scored
+   */
+  
   public void registreraMatch (int gjordaMål, int insläpptaMål) {
+    playedMatches++;
     goalsFor += gjordaMål;
     goalsAgainst += insläpptaMål;
     
@@ -28,18 +52,40 @@ class FotbollsLag {
     }
   }
   
+  /**
+   * @return name of team
+   */
+  
+  // Produces a text representation of the team. Fills with whitespace if team name is shorter than 15 characters.
   public String toString () {
-    return  (name + "\t" + playedMatches + "  " + wins + "  " + losses + "  " + 
+    int length = name.length();
+    String nameAndWhiteSpace = name;
+    for (int i = 0; i <= 15-length; i++) {
+      nameAndWhiteSpace += " ";
+    }
+    return  (nameAndWhiteSpace + "\t" + playedMatches + "  " + wins + "  " + losses + "  " + 
             draws + "  " + goalsFor + "-" + goalsAgainst + "  " + getPoints() );
   }
+  
+  /**
+   * @return current points
+   */
   
   public int getPoints() {
     return wins*3 + draws*1;
   }
   
+  /**
+   * @return Goals for minus goals agains
+   */
+  
   public int getMålskillnad() {
     return goalsFor - goalsAgainst;
   }
+  
+  /**
+   * @return Goals for
+   */
   
   public int getGoalsFor() {
     return goalsFor;
@@ -75,5 +121,21 @@ class FotbollsLag {
     }
     else return -1;
   }
+  
+  // Methods for the implementation of Comparable
+  
+  // Comparing names is enough for now
+  public boolean equals (Object o) {
+    if (!(o instanceof FotbollsLag)) {
+      return false;
+    }
+    FotbollsLag t = (FotbollsLag) o;
+    return this.getName().equals(t.getName());
+  }
+  
+  public int hashCode () {
+    return name.hashCode();
+  }
+  
   
 }
