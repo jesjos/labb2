@@ -9,13 +9,13 @@
 
 class FotbollsLag implements Comparable<FotbollsLag> {
   
-  // For the purposes of printing - length of name restricted to 15 characters.
+  // For the purposes of printing length of name restricted to 15 characters.
   private String name;
   private int playedMatches, wins, losses, draws, goalsFor, goalsAgainst;
   
   public FotbollsLag(String theName) {
     
-    // Name length restricted to 15
+    // Name length restricted to 15, removes characters over limit
     if (theName.length() > 15) {
       name = theName.substring(0,15);
     }
@@ -37,6 +37,10 @@ class FotbollsLag implements Comparable<FotbollsLag> {
    */
   
   public void registreraMatch (int gjordaMål, int insläpptaMål) {
+    if (gjordaMål < 0 || insläpptaMål < 0) {
+      System.err.println("Errors: Goals can't be negative!");
+    }
+    
     playedMatches++;
     goalsFor += gjordaMål;
     goalsAgainst += insläpptaMål;
@@ -121,21 +125,5 @@ class FotbollsLag implements Comparable<FotbollsLag> {
     }
     else return -1;
   }
-  
-  // Methods for the implementation of Comparable
-  
-  // Comparing names is enough for now
-  public boolean equals (Object o) {
-    if (!(o instanceof FotbollsLag)) {
-      return false;
-    }
-    FotbollsLag t = (FotbollsLag) o;
-    return this.getName().equals(t.getName());
-  }
-  
-  public int hashCode () {
-    return name.hashCode();
-  }
-  
   
 }

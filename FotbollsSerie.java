@@ -12,7 +12,7 @@ class FotbollsSerie {
   // Maps team names to team references, for fast retrieval
   private HashMap<String, FotbollsLag> nameMap = new HashMap<String,FotbollsLag>();
   
-  // Creates the series in question, copies teams from input to teams list and updates the hash map
+  // Sets up series, updates HashMap to reflect the list of teams.
   public FotbollsSerie (String theName, ArrayList<FotbollsLag> theTeams) {
     name = theName;
     if (theTeams != null) {
@@ -24,7 +24,7 @@ class FotbollsSerie {
   /*  Checks whether both teams are in the series, if so - registers the match for both teams
       Returns true for success, false for failure. */
   public boolean registreraMatch (String name1, String name2, int goals1, int goals2) {
-    if (!nameMap.containsKey(name1) || !nameMap.containsKey(name2)) {
+    if ((!nameMap.containsKey(name1) || !nameMap.containsKey(name2)) || (name1.equals(name2))) {
       return false;
     }
     else {
@@ -34,6 +34,7 @@ class FotbollsSerie {
     }
   }
   
+  // Returns reference to team with matching name
   public FotbollsLag getLag (String theName) {
     return nameMap.get(theName);
   }
@@ -47,7 +48,8 @@ class FotbollsSerie {
     /*  Compiles regexp used to parse the input - regexp yields 4 groups: the whole string, name team1, name team2,
         goals team1, goals team2 */
         
-    Pattern p = Pattern.compile("([^-]+)[-|;](.+)\\s(\\d+)[-|;](\\d+)");
+    Pattern p = Pattern.compile("([^-]+)[-|;](.+)[\\s|;](\\d+)[-|;](\\d+)");
+    
     String input = JOptionPane.showInputDialog(null, "Enter match results. \nFormat as follows: FC Z-BK Hoppsan 3-1.");
     
     // Matcher applies the regexp to the input string
@@ -94,6 +96,58 @@ class FotbollsSerie {
       if (!nameMap.containsKey(team.getName()))
         nameMap.put(team.getName(), team);
     }
+  }
+  
+  private static void errorReport (int n) {
+    System.err.println("Error in test #" + n + "!");
+  }
+  
+  
+  // Tests various methods in the class
+  public static void main(String[] args) {
+    FotbollsLag t1 = new FotbollsLag("team1");
+    FotbollsLag t2 = new FotbollsLag("team2");
+    FotbollsLag t3 = new FotbollsLag("team3");
+    
+    ArrayList<FotbollsLag> list = new ArrayList<FotbollsLag>();
+    
+    list.add(t1);
+    list.add(t2);
+    list.add(t3);
+    
+    FotbollsSerie s = new FotbollsSerie("allsvenskan", list);
+    
+    // test 1 - getLag returns reference to correct object
+    if (! (s.getLag("team1") == t1)) {
+      errorReport(1);
+    }
+    
+    // test 2 - match registration works
+    s.registreraMatch("team1", "team2", 3, 1);
+    if (! (s.getLag("team1").getPoints() == 3 && s.getLag("team2").getPoints() == 0)) {
+      errorReport(2);
+    } 
+    
+    // test 3 - check that team order is correct on toString - this tests sorting and compareTo in FotbollsLag
+    s.registreraMatch("team2", "team3", 2, 1);
+    Pattern p = Pattern.compile("(\\D+\\d).*\\n(\\D+\\d).*\\n(\\D+\\d)");
+    Matcher m = p.matcher(s.toString());
+    while(m.find()) {
+      if (! ( m.group(1).trim().equals("team1") &&
+              m.group(2).trim().equals("team2") &&
+              m.group(3).trim().equals("team3") )) {
+                errorReport(3);
+              }
+    }
+    
+    // test 4 - a test of read result - prints the current status of the series so that user can check it,
+    // prompts for further tests
+    do {
+         s.readResult();
+         System.out.println(s.toString());
+         System.out.println("");
+    } while(JOptionPane.showConfirmDialog(null, "Would you like to perform another test?\n") == JOptionPane.YES_OPTION);
+  
   }
   
   

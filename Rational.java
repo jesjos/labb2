@@ -1,5 +1,4 @@
 import java.util.regex.*;
-import java.util.ArrayList;
 
 class Rational{
   
@@ -29,7 +28,6 @@ class Rational{
   }
   
   // Methods
-  
   public int getNumerator() {
     return n;
   }
@@ -40,7 +38,7 @@ class Rational{
   
   
   /*  set(a,b) sets the numerator and denominator. Checks that b != 0, that a and b haven't got a divisor larger than 1.
-      Divides a and b with divisor if nessecary */
+      Divides a and b with divisor if necessary. Value of denominator is preserved even if number is negative.  */
   
   public void set (int a, int b){
     
@@ -49,7 +47,7 @@ class Rational{
       System.exit(1);
     }
     
-    if (a == 0) { n = a; d = b; }
+    if (a == 0) { n = 0; d = b; }
     
     else {
       
@@ -116,7 +114,7 @@ class Rational{
   
   /*  parse takes a string and attempts to construct a rational from it. 
       If input string is of the wrong format method returns null.
-      Note: in our opinion it could have been OK to allow b = 0, since the set method would handle the error
+      Note: in our opinion it could have been OK to allow b = 0, since the set method would handle the error.
       As the method is written now, strings where b = 0 will not be matched.
   */
   public static Rational parse(String s) {
@@ -134,6 +132,7 @@ class Rational{
       return new Rational(a,b);
     }
     
+    // If matching fails, return null
     return null;
   }
   
@@ -142,7 +141,7 @@ class Rational{
     return (Object) r;
   }
   
-  // If two rationals equal each other, their string representations should match
+  // If two maximally divided rationals equal each other, their string representations should match
   public boolean equals (Rational r) {
     return r.toString().equals(this.toString()); 
   }
@@ -151,6 +150,7 @@ class Rational{
   public boolean lessThan (Rational r) {
     int n1,n2;
     
+    // If denominators do not match, crosswise multiplication is needed
     if (this.getDenominator() != r.getDenominator()) {
       n1 = this.getNumerator() * r.getDenominator();
       n2 = r.getNumerator() * this.getDenominator();
